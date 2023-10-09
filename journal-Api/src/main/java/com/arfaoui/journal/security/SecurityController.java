@@ -1,5 +1,6 @@
 package com.arfaoui.journal.security;
 
+import com.arfaoui.journal.dto.auth.AuthenticationRequest;
 import com.nimbusds.jwt.JWTClaimsSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -9,10 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.*;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.crypto.Mac;
 import java.time.Instant;
@@ -32,10 +30,10 @@ public class SecurityController {
     private JwtEncoder jwtEncoder ;
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login(
-            @RequestParam String email,
-            @RequestParam String password
-    ) {
+    public ResponseEntity<Map<String, String>> login(@RequestBody AuthenticationRequest loginRequest) {
+        String email = loginRequest.getEmail();
+        String password = loginRequest.getPassword();
+
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
         Instant instant = Instant.now();
         String scope = authentication.getAuthorities().stream()
